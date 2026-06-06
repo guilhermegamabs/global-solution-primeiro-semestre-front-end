@@ -1,0 +1,133 @@
+.ignis-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--ignis-border);
+}
+
+.ignis-header__caption {
+    font-family: var(--ignis-mono);
+    font-size: 13px;
+    color: var(--ignis-muted-3);
+}
+
+.ignis-wordmark {
+    font-family: var(--ignis-mono);
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ignis-brand);
+    letter-spacing: 0.12em;
+}
+
+.ignis-wordmark--block {
+    display: block;
+    margin-bottom: 18px;
+}
+
+.ignis-status-dot,
+.ignis-status-dot--alert {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.ignis-status-dot {
+    background: var(--ignis-safe);
+    animation: ignis-pulse-safe 2.5s ease-in-out infinite;
+}
+
+.ignis-status-dot--alert {
+    background: var(--ignis-critical);
+    animation: ignis-pulse-alert 1.2s ease-in-out infinite;
+}
+
+@keyframes ignis-pulse-safe {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.40; }
+}
+
+@keyframes ignis-pulse-alert {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.20; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ignis-status-dot,
+    .ignis-status-dot--alert {
+        animation: none;
+    }
+}
+
+.ignis-section-label {
+    font-family: var(--ignis-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.10em;
+    color: var(--ignis-faint);
+    margin: 0 0 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--ignis-border);
+}
+
+.ignis-section-label--spaced {
+    margin-top: 16px;
+}
+
+.ignis-spacer-sm { height: 6px; }
+.ignis-spacer-md { height: 10px; }
+.ignis-spacer-lg { height: 18px; }
+.ignis-spacer-xl { height: 24px; }
+.ignis-spacer-2xl { height: 28px; }
+
+.ignis-empty {
+    text-align: center;
+    padding: 56px 20px;
+}
+
+.ignis-empty-icon {
+    font-size: 32px;
+    margin-bottom: 14px;
+    opacity: 0.40;
+    color: var(--ignis-safe);
+}
+
+.ignis-empty-title {
+    font-family: var(--ignis-sans);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ignis-ink);
+    margin-bottom: 8px;
+}
+
+.ignis-empty-body {
+    font-family: var(--ignis-sans);
+    font-size: 13px;
+    color: var(--ignis-muted);
+    max-width: 38ch;
+    margin: 0 auto;
+    line-height: 1.6;
+    text-wrap: pretty;
+}
+
+.ignis-sidebar-label {
+    font-family: var(--ignis-mono);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.10em;
+    color: var(--ignis-faint-2);
+    margin-bottom: 8px;
+}
+
+.ignis-sidebar-label--nav { margin-bottom: 4px; }
+
+.ignis-sidebar-footer {
+    font-family: var(--ignis-mono);
+    font-size: 10px;
+    color: var(--ignis-faint-3);
+    line-height: 1.8;
+}
+
+.ignis-sidebar-footer strong { color: var(--ignis-ink-soft); }

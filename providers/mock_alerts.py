@@ -2,7 +2,7 @@ import streamlit as st
 
 
 @st.cache_data
-def fetch_satellite_alerts() -> list[dict]:
+def fetchSatelliteAlerts():
     return [
         {
             "id": "IGN-2024-001",

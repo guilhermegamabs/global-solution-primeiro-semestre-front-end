@@ -1,0 +1,89 @@
+.ignis-badge {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 4px;
+    font-family: var(--ignis-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--ignis-bg);
+}
+.ignis-badge--critical { background: var(--ignis-critical); }
+.ignis-badge--warning  { background: var(--ignis-warning); }
+.ignis-badge--caution  { background: var(--ignis-caution); }
+.ignis-badge--safe     { background: var(--ignis-safe); }
+.ignis-badge--info     { background: var(--ignis-brand); }
+
+.ignis-chip {
+    font-family: var(--ignis-mono);
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: color-mix(in oklab, var(--chip-color) 12%, transparent);
+    color: var(--chip-color);
+    border: 1px solid var(--chip-color);
+}
+
+.ignis-chip--pill {
+    background: color-mix(in oklab, var(--chip-color) 12%, transparent);
+    border-color: color-mix(in oklab, var(--chip-color) 30%, transparent);
+}
+
+.ignis-conf {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    vertical-align: middle;
+}
+
+.ignis-conf__track {
+    width: 44px;
+    height: 3px;
+    background: var(--ignis-border-2);
+    border-radius: 2px;
+    display: inline-block;
+    overflow: hidden;
+}
+
+.ignis-conf__fill {
+    display: block;
+    height: 100%;
+    background: var(--conf-color);
+    border-radius: 2px;
+}
+
+.ignis-conf__pct {
+    font-family: var(--ignis-mono);
+    font-size: 11px;
+    color: var(--ignis-muted);
+    font-weight: 500;
+}
+
+.ignis-sidebar-summary {
+    display: flex;
+    flex-direction: column;
+}
+
+.ignis-sidebar-summary__row {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 6px;
+}
+
+.ignis-sidebar-summary__count {
+    font-family: var(--ignis-mono);
+    font-size: 14px;
+    color: var(--ignis-ink-soft);
+    font-weight: 600;
+}
+
+.ignis-sidebar-summary__empty {
+    font-family: var(--ignis-mono);
+    font-size: 12px;
+    color: var(--ignis-muted-4);
+}

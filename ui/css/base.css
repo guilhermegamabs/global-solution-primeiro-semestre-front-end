@@ -1,0 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+    --ignis-bg:       oklch(0.14 0.008 250);
+    --ignis-surface:  oklch(0.17 0.010 250);
+    --ignis-surface-2:oklch(0.19 0.010 250);
+    --ignis-surface-3:oklch(0.20 0.010 250);
+    --ignis-resolved: oklch(0.16 0.010 250);
+    --ignis-border:   oklch(0.30 0.012 250);
+    --ignis-border-2: oklch(0.32 0.012 250);
+    --ignis-brand:    oklch(0.78 0.140 195);
+    --ignis-critical: oklch(0.70 0.160  28);
+    --ignis-critical-strong: oklch(0.72 0.165 28);
+    --ignis-warning:  oklch(0.80 0.150  70);
+    --ignis-caution:  oklch(0.86 0.130 100);
+    --ignis-caution-soft: oklch(0.83 0.125 95);
+    --ignis-safe:     oklch(0.78 0.140 155);
+    --ignis-ink:      oklch(0.97 0.005 250);
+    --ignis-ink-soft: oklch(0.96 0.008 250);
+    --ignis-text:     oklch(0.95 0.008 250);
+    --ignis-muted:    oklch(0.88 0.010 250);
+    --ignis-muted-2:  oklch(0.80 0.012 250);
+    --ignis-muted-3:  oklch(0.76 0.012 250);
+    --ignis-muted-4:  oklch(0.74 0.012 250);
+    --ignis-muted-5:  oklch(0.73 0.012 250);
+    --ignis-muted-6:  oklch(0.70 0.012 250);
+    --ignis-muted-7:  oklch(0.68 0.012 250);
+    --ignis-muted-8:  oklch(0.66 0.012 250);
+    --ignis-faint:    oklch(0.64 0.012 250);
+    --ignis-faint-2:  oklch(0.62 0.012 250);
+    --ignis-faint-3:  oklch(0.60 0.012 250);
+    --ignis-sev-row-critical: oklch(0.22 0.040 28);
+    --ignis-sev-row-warning:  oklch(0.22 0.035 70);
+    --ignis-sev-row-caution:  oklch(0.22 0.030 95);
+    --ignis-sev-row-info:     oklch(0.22 0.025 200);
+    --ignis-mono:     'JetBrains Mono', 'Courier New', monospace;
+    --ignis-sans:     'Inter', system-ui, -apple-system, sans-serif;
+    --ignis-radius:   6px;
+}
+
+[data-testid="stSidebar"] > div:first-child {
+    background: oklch(0.12 0.008 250) !important;
+    border-right: 1px solid var(--ignis-border);
+}
+
+[data-testid="stExpander"] summary {
+    font-family: var(--ignis-mono) !important;
+    font-size: 11px !important;
+    letter-spacing: 0.05em !important;
+    color: var(--ignis-muted-3) !important;
+    text-transform: uppercase;
+}

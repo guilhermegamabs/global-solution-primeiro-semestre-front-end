@@ -1,4 +1,4 @@
-import datetime as dt
+﻿import datetime as dt
 
 import matplotlib.ticker as ticker
 import matplotlib.pyplot as plt
@@ -6,11 +6,11 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from providers.mock_timeseries import (
-    fetch_fire_timeseries,
-    fetch_state_impact,
-    fetch_hourly_pattern,
+    fetchFireTimeseries,
+    fetchStateImpact,
+    fetchHourlyPattern,
 )
-from ui.components import render_severity_badge
+from ui.components import renderSeverityBadge
 
 _SEVERITY_HEX = {
     "critical": "#cc2418",
@@ -77,13 +77,13 @@ _PLOTLY_CONFIG = {
 }
 
 
-def render_analytics() -> None:
-    ts_raw = fetch_fire_timeseries()
+def renderAnalytics() -> None:
+    ts_raw = fetchFireTimeseries()
     dates_all = ts_raw["dates"]
     d_min = dates_all[0].date()
     d_max = dates_all[-1].date()
 
-    st.markdown('<div style="height:6px;"></div>', unsafe_allow_html=True)
+    st.markdown('<div class="ignis-spacer-sm"></div>', unsafe_allow_html=True)
 
     fc1, fc2, fc3 = st.columns([2.6, 1.8, 1.8])
 
@@ -135,16 +135,16 @@ def render_analytics() -> None:
     tab1, tab2, tab3 = st.tabs(["Fire activity", "Area impact", "Hourly pattern"])
 
     with tab1:
-        _render_timeline(filtered_dates, filtered_ts, active_sevs)
+        renderTimeline(filtered_dates, filtered_ts, active_sevs)
 
     with tab2:
-        _render_area_impact(active_sevs, source_factor)
+        renderAreaImpact(active_sevs, source_factor)
 
     with tab3:
-        _render_hourly(sel_sources)
+        renderHourly(sel_sources)
 
 
-def _render_timeline(
+def renderTimeline(
     dates: list,
     ts: dict[str, list[int]],
     active_sevs: list[str],
@@ -200,16 +200,13 @@ def _render_timeline(
 
     total = sum(sum(ts[s]) for s in active_sevs if s in ts)
     st.markdown(
-        f'<p style="font-family:\'JetBrains Mono\',monospace;font-size:11px;'
-        f'color:oklch(0.42 0.005 353);margin-top:2px;">'
-        f'{total} detections in selected period'
-        f'</p>',
+        f'<p class="ignis-chart-caption">{total} detections in selected period</p>',
         unsafe_allow_html=True,
     )
 
 
-def _render_area_impact(active_sevs: list[str], source_factor: float) -> None:
-    sd = fetch_state_impact()
+def renderAreaImpact(active_sevs: list[str], source_factor: float) -> None:
+    sd = fetchStateImpact()
     states = sd["states"]
 
     fig = go.Figure()
@@ -260,16 +257,15 @@ def _render_area_impact(active_sevs: list[str], source_factor: float) -> None:
         if sev in active_sevs
     )
     st.markdown(
-        f'<p style="font-family:\'JetBrains Mono\',monospace;font-size:11px;'
-        f'color:oklch(0.42 0.005 353);margin-top:2px;">'
+        f'<p class="ignis-chart-caption">'
         f'{total_ha:,} ha total across {len(sd["states"])} states in selected severity levels'
         f'</p>',
         unsafe_allow_html=True,
     )
 
 
-def _render_hourly(sel_sources: list[str]) -> None:
-    hourly = fetch_hourly_pattern()
+def renderHourly(sel_sources: list[str]) -> None:
+    hourly = fetchHourlyPattern()
     hours = hourly["hours"]
     counts = list(hourly["counts"])
 
@@ -292,6 +288,7 @@ def _render_hourly(sel_sources: list[str]) -> None:
 
     for spine in ax.spines.values():
         spine.set_color("#2a2a2a")
+
     ax.tick_params(colors="#555555", labelsize=8.5)
     ax.set_xticks(hours)
     ax.set_xticklabels([f"{h:02d}h" for h in hours], color="#555555", fontsize=8)
@@ -314,8 +311,7 @@ def _render_hourly(sel_sources: list[str]) -> None:
     plt.close(fig)
 
     st.markdown(
-        '<p style="font-family:\'JetBrains Mono\',monospace;font-size:11px;'
-        'color:oklch(0.40 0.005 353);margin-top:4px;line-height:1.6;">'
+        '<p class="ignis-chart-caption ignis-chart-caption--lead">'
         'Peaks at 13-15 UTC and 01-03 UTC: VIIRS/MODIS polar overpass windows. '
         'GOES-16 provides continuous coverage across all hours.'
         '</p>',

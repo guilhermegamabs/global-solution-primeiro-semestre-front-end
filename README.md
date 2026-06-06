@@ -1,5 +1,12 @@
 # IGNIS — Wildfire Command Dashboard
 
+## Integrantes
+
+| Nome | RM |
+|---|---|
+| Guilherme Gama | RM565293 |
+| Igor Thiago Nakajima Vieira | RM563632 |
+
 Global Solution 2026/1 — Front-end e Mobile Development em Sistemas de IA — FIAP
 
 Dashboard interativo para defesa civil e operações de emergência em queimadas no Brasil. Transforma dados satelitais (mockados) em fila de alertas acionáveis com fluxo human-in-the-loop: aprovar, modificar ou descartar recomendações de IA.
@@ -34,6 +41,9 @@ Gradio seria adequado para protótipos de modelo isolado, mas IGNIS é multi-tel
 
 ## Arquitetura
 
+Diagrama completo (Mermaid) em [`ARCHITECTURE.md`](./ARCHITECTURE.md) — camadas, fluxo de alerta, responsabilidades.
+
+
 ```
 .
 ├── app.py                  # entry point, sidebar, roteamento
@@ -65,17 +75,6 @@ providers ──► pipelines ──► state ──► features ──► ui
 
 `render_severity_badge` é reutilizado em alerts.py, map_view.py e sidebar (componentização real).
 
-## Requisitos Técnicos Atendidos
-
-- Estado e cache: `init_state` guard único + `@st.cache_data` em providers.
-- 3 filtros interativos (Analytics: data, severidade, fonte satelital).
-- 4 filtros interativos (Map: estado, severidade, confiança mínima, status).
-- 2+ visualizações: Plotly stacked area, Plotly stacked bar, Plotly Scattermapbox, Matplotlib bar.
-- Layout: sidebar (nav + summary), tabs (analytics), columns (filtros e ações).
-- Design para latência: `st.spinner` no boot de estado, `st.cache_data` em dados pesados.
-- Cores semânticas: paleta OKLCH crítica/warning/caution/safe consistente em toda app.
-- Human-in-the-loop: Approve / Modify and approve / Dismiss com audit trail (resolvidos ficam colapsados, greyed).
-
 ## Instalação
 
 Python 3.10+.
@@ -87,6 +86,24 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
+## Modelo de IA (risco de evacuação)
+
+`pipelines/risk_model.py` — `RandomForestClassifier` (scikit-learn) que prevê probabilidade de "ação urgente recomendada" a partir de `fire_area_ha`, `wind_speed`, `confidence`, `hours_since_detection`, `severity_ordinal`. Treinado em dataset sintético reproduzível (seed=42, 5000 amostras), AUC-ROC ~0.78.
+
+```bash
+python -m pipelines.train_risk_model     # treina e salva pipelines/risk_model.joblib
+```
+
+Score (`ml_risk_score`) é anexado a cada alerta em `init_state` (cacheado via `@st.cache_resource`) e exibido como badge "ML risk N%" no card.
+
+## Testes automatizados
+
+```bash
+pytest tests/ -v
+```
+
+30 testes cobrem `pipelines/alert_pipeline.py` (ordenação, filtros), `pipelines/enrichment.py` (cruzamento 2ª fonte, agregação), `pipelines/risk_model.py` (predição, alto vs baixo risco) e `providers/` (shape, ranges, alinhamento de arrays). Rodam fora do Streamlit — provam que arquitetura não depende do framework de UI. Config em `pytest.ini`.
+
 ## Execução
 
 ```bash
@@ -95,12 +112,17 @@ streamlit run app.py
 
 Abre em `http://localhost:8501`.
 
-## Telas
+## Telas (storytelling panorama → detalhe)
 
-- **Alert queue**: fila de alertas pendentes ordenada por severidade. Cada card mostra região, fonte satelital, confiança, área, vento, rationale do modelo e ação recomendada. Operador aprova, modifica ou descarta. Resolvidos viram audit trail colapsado.
-- **Map view**: Scattermapbox Brasil com marcadores por severidade, hover detalhado, 4 filtros, stats bar e lista compacta abaixo.
-- **Analytics**: 3 tabs — série temporal 30 dias (Plotly stacked area), impacto por estado (Plotly stacked bar), padrão horário UTC (Matplotlib bar com destaque overpass VIIRS/MODIS).
+- **Briefing** *(entrada)*: KPIs nacionais (eventos, pendentes, críticos, área queimada, ML risk médio), tabela por UF cruzando carga de incêndio com previsão climática 24h (vento + umidade + chuva) e badge spread_risk_24h. Call-to-action direciona para fila.
+- **Alert queue**: fila ordenada por severidade. Card mostra região, satélite, confiança, área, vento, rationale, badge ML risk e ação recomendada. Approve / Modify / Dismiss. Resolvidos viram audit trail colapsado.
+- **Map view**: Scattermapbox Brasil, 4 filtros, hover detalhado, stats bar.
+- **Analytics**: 3 tabs — série temporal 30 dias (Plotly area), impacto por estado (Plotly bar), padrão horário UTC (Matplotlib bar com overpass VIIRS/MODIS destacado).
 
-## Stack
+## Múltiplas fontes integradas
 
-`streamlit · plotly · matplotlib · pandas`
+Pipeline cruza 2 fontes:
+1. `providers/mock_alerts.py` — focos satelitais (GOES-16, VIIRS, MODIS).
+2. `providers/mock_weather.py` — previsão INMET-like por UF (vento, umidade, chuva).
+
+`pipelines/enrichment.py` calcula `spread_risk_24h` por alerta combinando ambos — exibido no Briefing e disponível em cards/mapa.

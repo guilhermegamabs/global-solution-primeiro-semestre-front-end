@@ -1,34 +1,49 @@
 import streamlit as st
-from providers.mock_alerts import fetch_satellite_alerts
-from pipelines.alert_pipeline import process_alerts
+from providers.mock_alerts import fetchSatelliteAlerts
+from providers.mock_weather import fetchWeatherForecast
+from pipelines.alert_pipeline import processAlerts
+from pipelines.enrichment import enrichWithWeather
+from pipelines.risk_model import scoreAlerts
 
 
-def init_state() -> None:
+@st.cache_resource
+def ensureModelScored(raw: list[dict]) -> list[dict]:
+    """Cache do scoring ML — evita re-inferir a cada rerun."""
+    return scoreAlerts(raw)
+
+
+def initState() -> None:
     if "alerts" not in st.session_state:
-        raw = fetch_satellite_alerts()
-        st.session_state.alerts = process_alerts(raw)
+        raw = list(fetchSatelliteAlerts())
+        weather = fetchWeatherForecast()
+        raw = enrichWithWeather(raw, weather)
+        try:
+            raw = ensureModelScored(raw)
+        except FileNotFoundError:
+            pass
+        st.session_state.alerts = processAlerts(raw)
 
     if "alert_modifications" not in st.session_state:
         st.session_state.alert_modifications = {}
 
 
-def get_all_alerts() -> list[dict]:
+def getAllAlerts() -> list[dict]:
     return st.session_state.get("alerts", [])
 
 
-def get_pending_alerts() -> list[dict]:
-    return [a for a in get_all_alerts() if a.get("status") == "pending"]
+def getPendingAlerts() -> list[dict]:
+    return [a for a in getAllAlerts() if a.get("status") == "pending"]
 
 
-def get_resolved_alerts() -> list[dict]:
-    return [a for a in get_all_alerts() if a.get("status") != "pending"]
+def getResolvedAlerts() -> list[dict]:
+    return [a for a in getAllAlerts() if a.get("status") != "pending"]
 
 
-def count_pending() -> int:
-    return len(get_pending_alerts())
+def countPending() -> int:
+    return len(getPendingAlerts())
 
 
-def approve_alert(alert_id: str, custom_action: str | None = None) -> None:
+def approveAlert(alert_id: str, custom_action: str | None = None) -> None:
     for alert in st.session_state.alerts:
         if alert["id"] == alert_id:
             alert["status"] = "modified" if custom_action else "approved"
@@ -36,7 +51,7 @@ def approve_alert(alert_id: str, custom_action: str | None = None) -> None:
             break
 
 
-def dismiss_alert(alert_id: str) -> None:
+def dismissAlert(alert_id: str) -> None:
     for alert in st.session_state.alerts:
         if alert["id"] == alert_id:
             alert["status"] = "dismissed"
@@ -44,13 +59,13 @@ def dismiss_alert(alert_id: str) -> None:
             break
 
 
-def start_modify(alert_id: str) -> None:
+def startModify(alert_id: str) -> None:
     st.session_state.alert_modifications[alert_id] = "modifying"
 
 
-def cancel_modify(alert_id: str) -> None:
+def cancelModify(alert_id: str) -> None:
     st.session_state.alert_modifications.pop(alert_id, None)
 
 
-def is_modifying(alert_id: str) -> bool:
+def isModifying(alert_id: str) -> bool:
     return st.session_state.get("alert_modifications", {}).get(alert_id) == "modifying"
